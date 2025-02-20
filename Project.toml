@@ -1,9 +1,16 @@
-name = "Divesinet"
+name = "Diversinet"
 uuid = "3b6113c3-62f7-4926-949c-82b48cf3552c"
 authors = ["Mike <mikeryanmay@gmail.com> and contributors"]
 version = "1.0.0-DEV"
 
+[deps]
+DiversinetInterface = "95a974de-145e-9a5d-999d-f402aaa537ab"
+PhyloNetworks = "33ad39ac-ed31-50eb-9b15-43d0656eaa72"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
+
 [compat]
+PhyloNetworks = "1.0.0"
+Revise = "3.7.2"
 julia = "1.6.7"
 
 [extras]

@@ -1,6 +1,6 @@
 using Divesinet
 using Test
 
-@testset "Divesinet.jl" begin
+@testset "Diversinet.jl" begin
     # Write your tests here.
 end

@@ -42,6 +42,9 @@ mutable struct DiversinetModel
         # make the struct
         x = new()
 
+        # associate finalizer
+        finalizer(releaseMemory, x)
+
         # make a new tp instance
         x.tp = DiversinetInterface.Diversinet!Interface!DiversinetInterface();
 
@@ -69,14 +72,14 @@ mutable struct DiversinetModel
 
     # constructor (Phylonetworks object)
     function DiversinetModel(network::HybridNetwork;
-        λ::Float64  = 1.0,
-        μ::Float64  = 0.0,
-        η::Float64  = 0.0,
-        ζ::Float64  = 0.0,
-        ν::Float64  = 0.0,
-        ψ::Float64  = 0.0,
-        ρ::Float64  = 1.0,
-        kmax::Int64 = 128)
+                             λ::Float64  = 1.0,
+                             μ::Float64  = 0.0,
+                             η::Float64  = 0.0,
+                             ζ::Float64  = 0.0,
+                             ν::Float64  = 0.0,
+                             ψ::Float64  = 0.0,
+                             ρ::Float64  = 1.0,
+                             kmax::Int64 = 128)
 
         # check the network
         !network.isrooted && throw(ArgumentError("Network is not rooted"))
@@ -85,11 +88,16 @@ mutable struct DiversinetModel
         newick = PhyloNetworks.writenewick(network)
 
         # create the object with the newick string
-        return DiversinetModel(newick, λ, μ, η, ζ, ν, ψ, ρ, kmax)
+        return DiversinetModel(newick, λ = λ, μ = μ, η = η, ζ = ζ, ν = ν, ψ = ψ, ρ = ρ, kmax = kmax)
 
     end
 
 end
+
+function releaseMemory(obj::DiversinetModel)
+    finalize(obj.tp)
+end
+
 
 function setLambda!(model::DiversinetModel, λ::Float64)
     λ < 0 && throw(DomainError("setLambda called with negative λ."))

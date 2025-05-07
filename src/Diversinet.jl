@@ -8,6 +8,6 @@ include("ModelStruct.jl")
 include("Likelihood.jl")
 include("Simulator.jl")
 include("JitterNetwork.jl")
-include("computeKmax.jl")
+include("ComputeKmax.jl")
 
 end

@@ -1,4 +1,4 @@
-@enum Condition begin
+@enum SimulateCondition begin
     Time = 1
     Survival = 2
     Tree = 3
@@ -14,8 +14,9 @@ function simulate(time::Float64,
                   ν::Float64 = 0.0,
                   ψ::Float64 = 0.0,
                   ρ::Float64 = 1.0,
-                  condition::Condition = Time,
-                  max::Int64 = 1000)
+                  condition::SimulateCondition = Time,
+                  max::Int64 = 1000,
+                  root::Bool = false)
 
     # domain checking
     reps < 1 && throw(DomainError("reps must be >= 1."))
@@ -57,7 +58,7 @@ function simulate(time::Float64,
     for i in 1:reps
 
         # simulate the newick
-        network = DiversinetInterface.simulate(interface, time, cond, -1, true, max)
+        network = DiversinetInterface.simulate(interface, time, cond, -1, true, max, root)
 
         # store
         networks[i] = String(network)

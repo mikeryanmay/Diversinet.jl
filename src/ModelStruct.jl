@@ -1,19 +1,30 @@
+@enum Condition begin
+	Nothing = 0
+	RootSurvival = 1
+	RootMRCA = 2
+	StemSurvival = 3
+	StemTwoSamples = 4
+end
+
 mutable struct DiversinetModel
     
     # the network
-    newick::String
+    newick::String;
     
     # parameters
-    λ::Float64
-    μ::Float64
-    η::Float64
-    ζ::Float64
-    ν::Float64
-    ψ::Float64
-    ρ::Float64
+    λ::Float64;
+    μ::Float64;
+    η::Float64;
+    ζ::Float64;
+    ν::Float64;
+    ψ::Float64;
+    ρ::Float64;
 
     # numerical settings
-    kmax::Int64
+    kmax::Int64;
+
+    # conditioning
+    cond::Condition;
 
     # flags
     λ_dirty::Bool;
@@ -24,9 +35,10 @@ mutable struct DiversinetModel
     ψ_dirty::Bool;
     ρ_dirty::Bool;
     k_dirty::Bool;
+    cond_dirty::Bool;
     
     # the tp instance
-    tp::DiversinetInterface.Diversinet!Interface!DiversinetInterfaceAllocated
+    tp::DiversinetInterface.Diversinet!Interface!DiversinetInterfaceAllocated;
 
     # constructor (newick string)
     function DiversinetModel(network::String;
@@ -37,7 +49,8 @@ mutable struct DiversinetModel
                              ν::Float64  = 0.0,
                              ψ::Float64  = 0.0,
                              ρ::Float64  = 1.0,
-                             kmax::Int64 = 128)
+                             kmax::Int64 = 128,
+                             cond::Condition = Nothing)
 
         # make the struct
         x = new()
@@ -61,6 +74,7 @@ mutable struct DiversinetModel
         setPsi!(x, ψ)
         setRho!(x, ρ)
         setKmax!(x, kmax)
+        setConditionalProbabilityType!(x, cond)
 
         # prepare the interface
         prepareModel!(x)
@@ -79,7 +93,8 @@ mutable struct DiversinetModel
                              ν::Float64  = 0.0,
                              ψ::Float64  = 0.0,
                              ρ::Float64  = 1.0,
-                             kmax::Int64 = 128)
+                             kmax::Int64 = 128,
+                             cond::Condition = Nothing)
 
         # check the network
         !network.isrooted && throw(ArgumentError("Network is not rooted"))
@@ -88,7 +103,7 @@ mutable struct DiversinetModel
         newick = PhyloNetworks.writenewick(network)
 
         # create the object with the newick string
-        return DiversinetModel(newick, λ = λ, μ = μ, η = η, ζ = ζ, ν = ν, ψ = ψ, ρ = ρ, kmax = kmax)
+        return DiversinetModel(newick, λ = λ, μ = μ, η = η, ζ = ζ, ν = ν, ψ = ψ, ρ = ρ, kmax = kmax, cond = cond)
 
     end
 
@@ -148,6 +163,11 @@ function setKmax!(model::DiversinetModel, kmax::Int64)
     model.k_dirty = true
 end
 
+function setConditionalProbabilityType!(model::DiversinetModel, cond::Condition)
+    model.cond = cond
+    model.cond_dirty = true
+end
+
 function computeLikelihood!(model::DiversinetModel)
 
     # first, make sure the model is prepared
@@ -203,6 +223,11 @@ function prepareModel!(model::DiversinetModel)
     if model.k_dirty
         DiversinetInterface.setKMaxInt(model.tp, model.kmax);
         model.k_dirty = false;
+    end
+
+    if model.cond_dirty
+        DiversinetInterface.setConditionalProbabilityType(model.tp, Int64(model.cond));
+        model.cond_dirty = false;
     end
 
 end

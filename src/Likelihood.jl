@@ -19,6 +19,14 @@ function computeLogLikelihood(newick::String;
     if ρ <= 0.0 return -Inf end
     if ρ > 1.0  return -Inf end
 
+    if isnan(λ) return -Inf end
+    if isnan(μ) return -Inf end
+    if isnan(η) return -Inf end
+    if isnan(ζ) return -Inf end
+    if isnan(ν) return -Inf end
+    if isnan(ψ) return -Inf end
+    if isnan(ρ) return -Inf end
+
     # make the model
     model = DiversinetModel(newick, λ = λ, μ = μ, η = η, ζ = ζ, ν = ν, ψ = ψ, ρ = ρ, kmax = kmax);
 
@@ -27,8 +35,6 @@ function computeLogLikelihood(newick::String;
 
     # # remove the model and force garbage collection (frees memory on c++ side)
     finalize(model)
-    # model = nothing
-    # GC.gc()
 
     return lnl;
 

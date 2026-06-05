@@ -1,20 +1,32 @@
 name = "Diversinet"
 uuid = "3b6113c3-62f7-4926-949c-82b48cf3552c"
-authors = ["Mike <mikeryanmay@gmail.com> and contributors"]
 version = "1.0.0-DEV"
+authors = ["Mike <mikeryanmay@gmail.com> and contributors"]
 
 [deps]
+AdaptiveMCMC = "717c3277-546c-407d-8270-09a39a0919a0"
+ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 DiversinetInterface = "95a974de-145e-9a5d-999d-f402aaa537ab"
+FreqTables = "da1fdf0e-e0ff-5433-a45f-9bb5ff651cb1"
+MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d"
 Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 PhyloNetworks = "33ad39ac-ed31-50eb-9b15-43d0656eaa72"
+ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
+StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
 [compat]
-Distributions = "0.25.117"
-Optim = "1.11.0"
-PhyloNetworks = "1.0.0"
-Revise = "3.7.2"
+AdaptiveMCMC = "0.1"
+ArgParse = "1"
+Distributions = "0.25"
+FreqTables = "1"
+MCMCChains = "7"
+Optim = "1"
+PhyloNetworks = "1"
+ProgressMeter = "1"
+Revise = "3"
+StatsPlots = "0.15"
 julia = "1.6.7"
 
 [extras]

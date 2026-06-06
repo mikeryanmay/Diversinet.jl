@@ -4,29 +4,19 @@ version = "1.0.0-DEV"
 authors = ["Mike <mikeryanmay@gmail.com> and contributors"]
 
 [deps]
-AdaptiveMCMC = "717c3277-546c-407d-8270-09a39a0919a0"
-ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
+CxxWrap = "1f15a43c-97ca-5a2a-ae31-89f07a497df4"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-DiversinetInterface = "95a974de-145e-9a5d-999d-f402aaa537ab"
-FreqTables = "da1fdf0e-e0ff-5433-a45f-9bb5ff651cb1"
-MCMCChains = "c7f686f2-ff18-58e9-bc7b-31028e88f75d"
-Optim = "429524aa-4258-5aef-a3af-852621145aeb"
+Diversinet_jll = "c4df329e-200a-5808-ae44-368b7f2361b5"
+Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 PhyloNetworks = "33ad39ac-ed31-50eb-9b15-43d0656eaa72"
-ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
-Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
-StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
+boost_jll = "28df3c45-c428-5900-9ff8-a3135698ca75"
 
 [compat]
-AdaptiveMCMC = "0.1"
-ArgParse = "1"
+CxxWrap = "0.17"
 Distributions = "0.25"
-FreqTables = "1"
-MCMCChains = "7"
-Optim = "1"
+Diversinet_jll = "0.0.1"
 PhyloNetworks = "1"
-ProgressMeter = "1"
-Revise = "3"
-StatsPlots = "0.15"
+boost_jll = "1.87.0"
 julia = "1.6.7"
 
 [extras]

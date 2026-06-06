@@ -1,7 +1,10 @@
 module Diversinet
 
 # dependencies
-using PhyloNetworks, DiversinetInterface, Distributions
+using PhyloNetworks, Distributions
+
+include("DiversinetInterface.jl")
+using .DiversinetInterface
 
 # my code
 include("ModelStruct.jl")

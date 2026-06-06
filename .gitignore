@@ -1,3 +1,6 @@
 /Manifest.toml
 /Diversinet.code-workspace
+/deps/deps.jl
+/deps/build.log
+/deps/build-julia-interface/
 *.pdf

@@ -1,0 +1,21 @@
+option('core_root',
+       type : 'string',
+       description : 'Path to the phyloploid_lib source root')
+
+option('core_lib',
+       type : 'string',
+       description : 'Path to the built libdiversinet shared library')
+
+option('core_include_dirs',
+       type : 'string',
+       value : '',
+       description : 'Colon-separated include directories for libdiversinet headers')
+
+option('julia',
+       type : 'string',
+       value : 'julia',
+       description : 'Julia executable used to query CxxWrap and Julia include paths')
+
+option('julia_project',
+       type : 'string',
+       description : 'Julia project containing CxxWrap')

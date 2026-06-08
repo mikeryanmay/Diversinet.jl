@@ -1,6 +1,4 @@
 import Libdl
-import Diversinet_jll
-import boost_jll
 
 const package_root = normpath(joinpath(@__DIR__, ".."))
 const deps_file = joinpath(@__DIR__, "deps.jl")
@@ -21,6 +19,14 @@ end
 
 function julia_executable()
     return get(ENV, "JULIA", joinpath(Sys.BINDIR, Base.julia_exename()))
+end
+
+function split_env_paths(value)
+    return [abspath(expanduser(path)) for path in split(value, ':') if !isempty(path)]
+end
+
+function core_include_dirs_from_env()
+    return split_env_paths(get(ENV, "DIVERSINET_CORE_INCLUDE_DIRS", ""))
 end
 
 function local_core_root()
@@ -63,44 +69,61 @@ function local_core_library(root)
     """)
 end
 
-function jll_core()
-    return (
-        root = Diversinet_jll.artifact_dir,
-        lib = Diversinet_jll.libdiversinet,
-        include_dirs = [
-            joinpath(Diversinet_jll.artifact_dir, "include"),
-            joinpath(boost_jll.artifact_dir, "include"),
-        ],
-        use_jll = true,
-    )
-end
-
 function core_config()
     env_root = get(ENV, "DIVERSINET_CPP_ROOT", "")
+    env_lib = get(ENV, "DIVERSINET_CORE_LIB", "")
 
     if !isempty(env_root)
         root = local_core_root()
+        include_dirs = [
+            joinpath(root, "api"),
+            joinpath(root, "src"),
+        ]
+        append!(include_dirs, core_include_dirs_from_env())
         return (
             root = root,
             lib = local_core_library(root),
-            include_dirs = [
-                joinpath(root, "api"),
-                joinpath(root, "src"),
-                joinpath(boost_jll.artifact_dir, "include"),
-            ],
+            include_dirs = include_dirs,
             use_jll = false,
         )
     end
 
-    env_lib = get(ENV, "DIVERSINET_CORE_LIB", "")
-    config = jll_core()
     if !isempty(env_lib)
         lib = abspath(expanduser(env_lib))
         isfile(lib) || error("DIVERSINET_CORE_LIB does not exist or is not a file: $lib")
-        return (; config.root, lib, config.include_dirs, config.use_jll)
+        include_dirs = core_include_dirs_from_env()
+        isempty(include_dirs) && error("""
+        DIVERSINET_CORE_LIB was set without DIVERSINET_CPP_ROOT.
+
+        Set DIVERSINET_CORE_INCLUDE_DIRS to the directories needed to compile
+        the Julia bridge against that library. For example:
+
+          DIVERSINET_CORE_LIB=/path/to/$(core_libname) \\
+          DIVERSINET_CORE_INCLUDE_DIRS=/path/to/diversnet/api:/path/to/diversnet/src \\
+          julia --project=. -e 'import Pkg; Pkg.build("Diversinet")'
+        """)
+        return (
+            root = dirname(dirname(lib)),
+            lib = lib,
+            include_dirs = include_dirs,
+            use_jll = false,
+        )
     end
 
-    return config
+    error("""
+    Diversinet native build requires an explicit C++ core library.
+
+    Set DIVERSINET_CPP_ROOT to a phyloploid_lib/diversnet checkout:
+
+      DIVERSINET_CPP_ROOT=/path/to/diversnet \\
+      julia --project=. -e 'import Pkg; Pkg.build("Diversinet")'
+
+    Or set DIVERSINET_CORE_LIB and DIVERSINET_CORE_INCLUDE_DIRS directly:
+
+      DIVERSINET_CORE_LIB=/path/to/$(core_libname) \\
+      DIVERSINET_CORE_INCLUDE_DIRS=/path/to/diversnet/api:/path/to/diversnet/src \\
+      julia --project=. -e 'import Pkg; Pkg.build("Diversinet")'
+    """)
 end
 
 function run_meson_setup(config)

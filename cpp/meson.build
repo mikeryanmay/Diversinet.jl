@@ -34,6 +34,7 @@ cxxwrap_dep = declare_dependency(
     cpp.find_library('cxxwrap_julia', dirs : cxxwrap_lib_dir),
   ])
 
+boost_dep = dependency('boost', required : true)
 core_dep = cpp.find_library('diversinet', dirs : core_lib_dir)
 core_inc_dirs = core_include_dirs == '' ? [
   join_paths(core_root, 'api'),
@@ -45,7 +46,7 @@ shared_module(
   'jlDiversinetInterface',
   'jlDiversinetInterface.cpp',
   include_directories : core_inc,
-  dependencies : [cxxwrap_dep, core_dep],
+  dependencies : [cxxwrap_dep, core_dep, boost_dep],
   name_prefix : 'lib',
   build_rpath : cxxwrap_lib_dir + ':' + core_lib_dir,
   install : false)

@@ -1,12 +1,12 @@
 // Compare SimpleNetworkModel direct operators against the sparse matrices.
 //
-// Build from /Users/mike/repos/Diversinet:
-//   c++ -std=c++17 -O3 -I../phyloploid_lib/src -I/opt/homebrew/include \
+// Build from /Users/mike/repos/Diversinet.jl:
+//   c++ -std=c++17 -O3 -I../Diversinet/src -I/opt/homebrew/include \
 //     -I/opt/homebrew/Cellar/eigen/3.4.0_1/include/eigen3 \
-//     scratch/check_phyloploid_direct_ops.cpp \
-//     -L../phyloploid_lib/builddir/src -ldiversinet \
-//     -Wl,-rpath,../phyloploid_lib/builddir/src \
-//     -o /tmp/check_phyloploid_direct_ops
+//     scratch/check_diversinet_direct_ops.cpp \
+//     -L../Diversinet/builddir/src -ldiversinet \
+//     -Wl,-rpath,../Diversinet/builddir/src \
+//     -o /tmp/check_diversinet_direct_ops
 
 #include <cmath>
 #include <iomanip>

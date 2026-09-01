@@ -1,4 +1,5 @@
 import Libdl
+import CxxWrap
 
 const package_root = normpath(joinpath(@__DIR__, ".."))
 const deps_file = joinpath(@__DIR__, "deps.jl")
@@ -7,18 +8,8 @@ const bridge_build_dir = joinpath(@__DIR__, "build-julia-interface")
 const libname = "libjlDiversinetInterface." * Libdl.dlext
 const core_libname = "libdiversinet." * Libdl.dlext
 
-function require_env_path(name)
-    value = get(ENV, name, "")
-    isempty(value) && error("Diversinet native build requires $name to be set.")
-    return abspath(expanduser(value))
-end
-
 function meson_executable()
     return get(ENV, "MESON", "meson")
-end
-
-function julia_executable()
-    return get(ENV, "JULIA", joinpath(Sys.BINDIR, Base.julia_exename()))
 end
 
 function split_env_paths(value)
@@ -54,7 +45,7 @@ function local_core_library(root)
     error("""
     Could not find the core Diversinet library.
 
-    Build phyloploid_lib first:
+    Build the Diversinet C++ library first:
 
       cd $root
       meson setup builddir .
@@ -76,8 +67,7 @@ function core_config()
     if !isempty(env_root)
         root = local_core_root()
         include_dirs = [
-            joinpath(root, "api"),
-            joinpath(root, "src"),
+            joinpath(root, "include"),
         ]
         append!(include_dirs, core_include_dirs_from_env())
         return (
@@ -99,7 +89,7 @@ function core_config()
         the Julia bridge against that library. For example:
 
           DIVERSINET_CORE_LIB=/path/to/$(core_libname) \\
-          DIVERSINET_CORE_INCLUDE_DIRS=/path/to/diversnet/api:/path/to/diversnet/src \\
+          DIVERSINET_CORE_INCLUDE_DIRS=/path/to/Diversinet/include \\
           julia --project=. -e 'import Pkg; Pkg.build("Diversinet")'
         """)
         return (
@@ -113,15 +103,15 @@ function core_config()
     error("""
     Diversinet native build requires an explicit C++ core library.
 
-    Set DIVERSINET_CPP_ROOT to a phyloploid_lib/diversnet checkout:
+    Set DIVERSINET_CPP_ROOT to a Diversinet checkout:
 
-      DIVERSINET_CPP_ROOT=/path/to/diversnet \\
+      DIVERSINET_CPP_ROOT=/path/to/Diversinet \\
       julia --project=. -e 'import Pkg; Pkg.build("Diversinet")'
 
     Or set DIVERSINET_CORE_LIB and DIVERSINET_CORE_INCLUDE_DIRS directly:
 
       DIVERSINET_CORE_LIB=/path/to/$(core_libname) \\
-      DIVERSINET_CORE_INCLUDE_DIRS=/path/to/diversnet/api:/path/to/diversnet/src \\
+      DIVERSINET_CORE_INCLUDE_DIRS=/path/to/Diversinet/include \\
       julia --project=. -e 'import Pkg; Pkg.build("Diversinet")'
     """)
 end
@@ -134,8 +124,8 @@ function run_meson_setup(config)
         "-Dcore_root=$(config.root)",
         "-Dcore_lib=$(config.lib)",
         "-Dcore_include_dirs=$(join(config.include_dirs, ':'))",
-        "-Djulia=$(julia_executable())",
-        "-Djulia_project=$package_root",
+        "-Dcxxwrap_prefix=$(CxxWrap.prefix_path())",
+        "-Djulia_include_dir=$(normpath(joinpath(Sys.BINDIR, Base.INCLUDEDIR)))",
     ]
 
     if isfile(joinpath(bridge_build_dir, "build.ninja"))

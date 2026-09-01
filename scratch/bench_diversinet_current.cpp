@@ -1,15 +1,15 @@
-// Lightweight baseline benchmark for phyloploid_lib's current likelihood path.
+// Lightweight baseline benchmark for Diversinet's current likelihood path.
 //
-// Build from /Users/mike/repos/Diversinet:
-//   c++ -std=c++17 -O3 -I../phyloploid_lib/api \
+// Build from /Users/mike/repos/Diversinet.jl:
+//   c++ -std=c++17 -O3 -I../Diversinet/include \
 //     -I/opt/homebrew/include -I/opt/homebrew/Cellar/eigen/3.4.0_1/include/eigen3 \
-//     scratch/bench_phyloploid_current.cpp \
-//     -L../phyloploid_lib/builddir/src -ldiversinet \
-//     -Wl,-rpath,../phyloploid_lib/builddir/src \
-//     -o /tmp/bench_phyloploid_current
+//     scratch/bench_diversinet_current.cpp \
+//     -L../Diversinet/builddir/src -ldiversinet \
+//     -Wl,-rpath,../Diversinet/builddir/src \
+//     -o /tmp/bench_diversinet_current
 //
 // Run:
-//   /tmp/bench_phyloploid_current ../phyloploid_lib/scratch/tree1.tre 100 128
+//   /tmp/bench_diversinet_current ../Diversinet/scratch/tree1.tre 100 128
 //
 // Optional args:
 //   tree reps kmax lambda mu eta zeta nu psi rho warmups integration_scheme
@@ -21,7 +21,7 @@
 #include <iostream>
 #include <string>
 
-#include "DiversinetInterface.h"
+#include <Diversinet/DiversinetInterface.h>
 
 namespace {
 
@@ -48,7 +48,7 @@ std::string read_first_line(const std::string& path) {
 
 int main(int argc, char** argv) {
     try {
-        const std::string tree_path = argc > 1 ? argv[1] : "../phyloploid_lib/scratch/tree1.tre";
+        const std::string tree_path = argc > 1 ? argv[1] : "../Diversinet/scratch/tree1.tre";
         const size_t reps = argc > 2 ? parse_size(argv[2]) : 100;
         const size_t kmax = argc > 3 ? parse_size(argv[3]) : 128;
 

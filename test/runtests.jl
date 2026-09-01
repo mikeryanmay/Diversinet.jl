@@ -1,4 +1,4 @@
-using Divesinet
+using Diversinet
 using Test
 
 @testset "Diversinet.jl" begin

@@ -4,91 +4,55 @@
 
 Julia interface for the Diversinet native C++ library.
 
-## Local Development Install
+## Installation before DiversinetRegistry is available
 
-The expected local repo layout is:
+Diversinet currently supports Julia 1.12 on x86-64 and ARM64 Linux and macOS.
+Until the custom registry is published, install the released binary wrapper
+and this package directly from GitHub:
 
-```text
-~/repos/Diversinet.jl       # this Julia package
-~/repos/Diversinet          # C++ core library checkout
-~/repos/DiversinetSims      # optional downstream simulation project
+```julia
+import Pkg
+Pkg.add(url="https://github.com/mikeryanmay/Diversinet_jll.git",
+        rev="Diversinet-v0.1.0+1")
+Pkg.add(url="https://github.com/mikeryanmay/Diversinet.jl.git")
 ```
 
-### 1. Build The C++ Core Library
+No compiler, Meson installation, Boost installation, Eigen installation, or
+C++ source checkout is required. `using Diversinet` downloads the appropriate
+prebuilt artifact through `Diversinet_jll`.
+
+Verify the installation with:
 
 ```sh
-cd ~/repos/Diversinet
-meson setup builddir .
-meson compile -C builddir
+julia --startup-file=no -e 'using Diversinet; println("Diversinet loaded")'
 ```
 
-This should produce:
+## Installation from DiversinetRegistry
 
-- macOS: `builddir/src/libdiversinet.dylib`
-- Linux: `builddir/src/libdiversinet.so`
+Once DiversinetRegistry is published, installation will be:
 
-### 2. Build This Julia Package
-
-Build the Julia package by pointing it at the C++ checkout:
-
-```sh
-cd ~/repos/Diversinet.jl
-DIVERSINET_CPP_ROOT=~/repos/Diversinet \
-julia --startup-file=no --project=. -e 'import Pkg; Pkg.resolve(); Pkg.instantiate(; allow_autoprecomp=false); Pkg.build("Diversinet"); Pkg.precompile()'
+```julia
+import Pkg
+Pkg.Registry.add(url="https://github.com/mikeryanmay/DiversinetRegistry.git")
+Pkg.add("Diversinet")
 ```
 
-Verify that `Diversinet` loads:
+## Local Julia development
 
-```sh
-julia --startup-file=no --project=. -e 'using Diversinet; println("ok")'
-```
-
-`DIVERSINET_CPP_ROOT` is only needed when building the native bridge. Once
-`deps/deps.jl` has been generated, normal `using Diversinet` calls use the
-recorded bridge library path.
-
-If you only want to provide the compiled core library directly, also provide
-the C++ include directories:
+Because `Diversinet_jll` is not registered yet, add its release before
+developing this checkout:
 
 ```sh
 cd ~/repos/Diversinet.jl
-DIVERSINET_CORE_LIB=~/repos/Diversinet/builddir/src/libdiversinet.dylib \
-DIVERSINET_CORE_INCLUDE_DIRS=~/repos/Diversinet/include \
-julia --startup-file=no --project=. -e 'import Pkg; Pkg.build("Diversinet"); Pkg.precompile()'
+julia --startup-file=no --project=. -e 'import Pkg; Pkg.add(Pkg.PackageSpec(url="https://github.com/mikeryanmay/Diversinet_jll.git", rev="Diversinet-v0.1.0+1")); Pkg.instantiate(); Pkg.test()'
 ```
 
-On Linux, use `libdiversinet.so` instead of `libdiversinet.dylib`.
-
-### 3. Use From Another Local Project
-
-For a downstream project such as `DiversinetSims`, develop this local package
-into that project environment:
-
-```sh
-cd ~/repos/DiversinetSims
-julia --startup-file=no --project=. -e 'import Pkg; Pkg.develop(path=joinpath(homedir(), "repos/Diversinet.jl")); Pkg.resolve(); Pkg.instantiate()'
-```
-
-Then run downstream scripts with the top-level downstream project active:
-
-```sh
-cd ~/repos/DiversinetSims/analyses/simulation_study
-julia --project=../.. analysis/template.jl
-```
-
-or set the project once in the shell:
-
-```sh
-export JULIA_PROJECT=~/repos/DiversinetSims
-```
-
-## Binary Package Direction
-
-The local source workflow above intentionally does not require
-`Diversinet_jll`. Once `Diversinet_jll` is registered, this package can add it
-as the default binary dependency for ordinary `Pkg.add` installs, while keeping
-`DIVERSINET_CPP_ROOT` and `DIVERSINET_CORE_LIB` as explicit source-build
-overrides.
+Native C++ and bridge development is intentionally separate from ordinary
+package installation. Make native changes in `Diversinet` and
+`cpp/jlDiversinetInterface.cpp`, then rebuild the artifacts with
+`DiversinetJLLBuilder`. This keeps developer toolchain requirements out of the
+user installation path. The old `DIVERSINET_CPP_ROOT`, `DIVERSINET_CORE_LIB`,
+and `DIVERSINET_CORE_INCLUDE_DIRS` installation variables are no longer used.
 
 ## License
 

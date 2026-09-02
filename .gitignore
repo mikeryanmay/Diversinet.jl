@@ -1,10 +1,6 @@
 /Manifest.toml
 /Diversinet.code-workspace
 /build/
-/deps/deps.jl
-/deps/build.log
-/deps/build-julia-interface/
-/deps/.DS_Store
 .DS_Store
 *.dylib
 *.so

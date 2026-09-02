@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 jobs:
   test:
-    name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }}
+    name: Julia 1.12 - ${{ matrix.os }} - ${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     permissions: # needed to allow julia-actions/cache to proactively delete old caches that it has created
@@ -22,20 +22,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version:
-          - '1.11'
-          - '1.6'
-          - 'pre'
-        os:
-          - ubuntu-latest
-        arch:
-          - x64
+        include:
+          - os: ubuntu-24.04
+            arch: x64
+          - os: ubuntu-24.04-arm
+            arch: aarch64
+          - os: macos-15-intel
+            arch: x64
+          - os: macos-15
+            arch: aarch64
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2
         with:
-          version: ${{ matrix.version }}
+          version: '1.12'
           arch: ${{ matrix.arch }}
       - uses: julia-actions/cache@v2
+      # Diversinet_jll is added by URL until DiversinetRegistry exists.
+      - name: Add the published native dependency
+        run: julia --startup-file=no --project=. -e 'import Pkg; Pkg.add(Pkg.PackageSpec(url="https://github.com/mikeryanmay/Diversinet_jll.git", rev="Diversinet-v0.1.0+1"))'
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
